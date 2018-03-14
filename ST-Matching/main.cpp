@@ -178,16 +178,16 @@ vector <Point> FindMatchedSequence() {
 				if (pre == cur) {
 					Ft = 1;
 				}
-				else if (network.tTosMin == DBL_MAX) {
+				else if (network->tTosMin == DBL_MAX) {
 					Ft = 0;
 				}
 				else {
-					vector <double> speed = network.getSpeed();
+					vector <double> speed = network->getSpeed();
 					double vMean = 0;//平均速度
 					double numerator = 0;
 					double vv1 = 0, vv2 = 0;
 
-					vMean = network.tTosMin * 1000 / (P[i].date - P[i - 1].date);//m/s
+					vMean = network->tTosMin * 1000 / (P[i].date - P[i - 1].date);//m/s
 					int spSize = (int)speed.size();//return m/s
 					for (int it = 0;it<spSize;++it) {
 						numerator += vMean * speed[it];
@@ -574,12 +574,14 @@ bool readConfig() {
 }
 
 int main(int argc, char* argv[]) {
+	// 读取config，获取数据库及一些参数信息
 	if (!readConfig()) {
 		cerr << "read config.ini error!" << endl;
 		return 0;
 	}
-
+	// 创建数据库实体
 	DB = new Database(dbname, dbport, dbaddr);
+	// 建立路网实体
 	network = new Graph(roadTN);
 
 	string basePath;

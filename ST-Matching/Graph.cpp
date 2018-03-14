@@ -54,7 +54,7 @@ void Graph::constructGraph(){
 	char buff[1000];
 	sprintf_s(buff,"select id,ST_AsText(ST_Transform(the_geom,4326)) from %s_vertices_pgr",roadTN.c_str());
 	string SQL = buff;
-	Database DB("osm","5432","127.0.0.1");
+	Database DB("shanghai_osm","5432","127.0.0.1");
 	PGresult*  res = DB.execQuery(SQL);
 	int tupleNum = n = PQntuples(res);
 	int id;
@@ -434,7 +434,7 @@ void Graph::reset(){
 }
 
 void Graph::writeToFile(){
-	ofstream fout("region");
+	ofstream fout("road_region");
 	int sz = (int)RegionCen.size();
 	fout<<sz<<endl;//有几个区域
 	for(int i=0;i<sz;++i){
@@ -449,7 +449,7 @@ void Graph::writeToFile(){
 }
 
 bool Graph::readFile(){
-	ifstream fin("region");
+	ifstream fin("road_region");
 	try{
 		int sz;
 		int val;
