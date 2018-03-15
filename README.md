@@ -12,6 +12,7 @@ In this section, I will show a flow chart of ST-Matching algorithm. **To be adde
 
 - PostgreSQL 10
   - NOTE : [How to operate PostgreSQL using C/C++?](https://segmentfault.com/a/1190000000628234)
+  - The thing needs to know is that if you install a x64 version, you should compile the project in x64, otherwise it would be ERROR.
 - Visual Studio 2017 
   - recomended, some other IDEs are OK
 - PostGIS 2.4.3
@@ -42,6 +43,51 @@ Osm2pgsql took 20s overall
 ```
 
 It's done.
+
+### Run it
+
+#### Firstly, modify config.ini
+
+You need to modify the `config.ini` in the project folder according to your database configuration, for example:
+
+```bash
+#ST-Matching配置文件,为方便处理，每一行“=”左边为配置的属性，“=”右边请空一格写入属性值，“=”左右两边请留一个空格。每行属性上一行是对其作用的解释，以“#”作为解释的开头。
+
+#数据库名称
+dbname = shanghai_osm
+#数据库端口号
+dbport = 5432
+#数据库地址
+dbaddr = 127.0.0.1
+#道路表名称
+roadTN = road_network
+#线程数，声明使用多少线程来进行计算
+threadnum = 3
+#每个轨迹点最多选多少个候选点。建议为5个
+K = 5
+#求最优路径时选取当前值最大的top个点用作下一个点的计算
+top = 3
+#选取某轨迹点的候选点时，距离轨迹点的范围，单位为Km
+R = 0.1
+#正态分布的方差，单位为Km
+sigma = 0.02
+```
+
+Usually, modifing the first four items is enough if you have no idea about the other five items.
+
+#### Secondly, format gps data
+
+The content of input gps file should be formatted as following, which respectively denote `id,timestamp,longitude,latitude` in order:
+
+```bash
+13301128438,2013-10-16 23:50:24,116.366653,39.938328
+13301128438,2013-10-16 23:50:48,116.366623,39.937351
+13301128438,2013-10-16 23:51:48,116.366722,39.933094
+13301128438,2013-10-16 23:54:24,116.367302,39.921505
+...
+```
+
+We should notice that the `id` segments are the same in a file, because the ST-Matching algorihm can only match one trajectory at a time.
 
 ### Acknowledgement
 

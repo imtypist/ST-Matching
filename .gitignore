@@ -77,9 +77,11 @@ $RECYCLE.BIN/
 # Visual Studio
 .vs/
 Debug/
+x64/
 *.opendb
 *.db
 *.sln
 *.vcxproj
 *.filters
 *.user
+road_region

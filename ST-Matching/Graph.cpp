@@ -52,9 +52,10 @@ void Graph::constructGraph(){
 	time_t tm = clock();
 	
 	char buff[1000];
-	sprintf_s(buff,"select id,ST_AsText(ST_Transform(the_geom,4326)) from %s_vertices_pgr",roadTN.c_str());
-	string SQL = buff;
 	Database DB("shanghai_osm","5432","127.0.0.1");
+
+	sprintf_s(buff, "select id,ST_AsText(ST_Transform(the_geom,4326)) from %s_vertices_pgr", roadTN.c_str());
+	string SQL = buff;
 	PGresult*  res = DB.execQuery(SQL);
 	int tupleNum = n = PQntuples(res);
 	int id;

@@ -1,6 +1,6 @@
-#include "main.h"
+ï»¿#include "main.h"
 
-//°Ñ¹ì¼£µã´æÈëÊı¾İ¿â
+//æŠŠè½¨è¿¹ç‚¹å­˜å…¥æ•°æ®åº“
 void loadInitPoint() {
 	string SQL = "select * from pg_class where relname = 'init_point'";
 	PGresult* res = DB->execQuery(SQL);
@@ -25,7 +25,7 @@ void loadInitPoint() {
 	}
 }
 
-//°ÑºòÑ¡µã´æÈëÊı¾İ¿â
+//æŠŠå€™é€‰ç‚¹å­˜å…¥æ•°æ®åº“
 void loadCandiPoint() {
 	string SQL = "select * from pg_class where relname = 'candi_point'";
 	PGresult* res = DB->execQuery(SQL);
@@ -53,8 +53,8 @@ void loadCandiPoint() {
 	}
 }
 
-//°ÑÊı¾İ¿âÖĞ¶Á³öµÄLINESTRING×Ö·û´®×ª»¯Îªµã×ø±ê
-//·µ»ØµãµÄvector
+//æŠŠæ•°æ®åº“ä¸­è¯»å‡ºçš„LINESTRINGå­—ç¬¦ä¸²è½¬åŒ–ä¸ºç‚¹åæ ‡
+//è¿”å›ç‚¹çš„vector
 vector < pair<double, double> > parseString(string str) {
 	vector < pair<double, double> > res;
 	size_t len = str.size();
@@ -95,8 +95,8 @@ bool getTaxiTrajectory(string filePath) {
 	return true;
 }
 
-//³õÊ¼»¯
-//¶ÁÈë¹ì¼££¬½¨Á¢µãµÄÓ³Éä
+//åˆå§‹åŒ–
+//è¯»å…¥è½¨è¿¹ï¼Œå»ºç«‹ç‚¹çš„æ˜ å°„
 bool init(string basePath) {
 	//network.reset();
 	Coef = 1 / (sqrt(2 * PI)*Sigma);
@@ -108,7 +108,7 @@ bool init(string basePath) {
 	return getTaxiTrajectory(basePath);
 }
 
-//ÕıÌ¬·Ö²¼
+//æ­£æ€åˆ†å¸ƒ
 double N(GeoPoint p, Point candiPoint) {
 	double x = getGeoDis(Point(p.longitude, p.latitude), candiPoint);
 	return Coef * exp(-SQR(x) / (2 * SQR(Sigma)));
@@ -121,9 +121,9 @@ double V(double d, Point t, Point s) {
 	return d / network->getCandiShortest(t, s);
 }
 
-//´«Èë¹ì¼£ÉÏÃ¿¸öµãµÄºòÑ¡µã¼¯ºÏ
-//¼ÆËãF,Fs,Ft
-//#define FT
+//ä¼ å…¥è½¨è¿¹ä¸Šæ¯ä¸ªç‚¹çš„å€™é€‰ç‚¹é›†åˆ
+//è®¡ç®—F,Fs,Ft
+#define FT
 vector <Point> FindMatchedSequence() {
 	tm = clock();
 	cerr << "start FindMatchedSequence" << endl;
@@ -134,7 +134,7 @@ vector <Point> FindMatchedSequence() {
 
 	double *f = new double[totCandiPoint + 1];
 	int *preVertex = new int[totCandiPoint + 1];
-
+	// åˆå§‹åŒ–ç½®é›¶
 	for (int i = 0;i <= totCandiPoint;++i)
 		f[i] = 0, preVertex[i] = 0;
 
@@ -146,10 +146,10 @@ vector <Point> FindMatchedSequence() {
 			return f > x.f;
 		}
 	};
-	vector < QStore > Q;//fÖµ£¬candiPoint[i-1]ÖĞÏÂ±ê
+	vector < QStore > Q;//få€¼ï¼ŒcandiPoint[i-1]ä¸­ä¸‹æ ‡
 	size_t sz = candiPoint[0].size();
 	for (int i = 0;i<sz;++i) {
-		f[candiPoint[0][i].id] = N(P[0], candiPoint[0][i]);
+		f[candiPoint[0][i].id] = N(P[0], candiPoint[0][i]); // æ­£æ€åˆ†å¸ƒæ¦‚ç‡
 		Q.push_back(QStore(f[candiPoint[0][i].id], i));
 	}
 
@@ -165,10 +165,10 @@ vector <Point> FindMatchedSequence() {
 			for (int j = 0;j<preSize;++j) {
 				Point pre(candiPoint[i - 1][Q[j].idx]);
 
-				//ÇóVµÄ¹ı³ÌÖĞ»áÇów£¬Í¬Ê±µÃµ½(t->s)µÄ×îÓÅÂ·¶Î¼¯
+				//æ±‚Vçš„è¿‡ç¨‹ä¸­ä¼šæ±‚wï¼ŒåŒæ—¶å¾—åˆ°(t->s)çš„æœ€ä¼˜è·¯æ®µé›†
 				network->tTosMin = DBL_MAX;
 				network->tTosSeg = 0;
-				//Í¨¹ıºòÑ¡µãidÀ´±êÊ¾Ò»Ìõ±ß
+				//é€šè¿‡å€™é€‰ç‚¹idæ¥æ ‡ç¤ºä¸€æ¡è¾¹
 				pair <int, int> x = make_pair(pre.id, cur.id);
 				Fs = N(P[i], cur)*V(d, pre, cur);
 				//Ft is cosine distance
@@ -178,12 +178,14 @@ vector <Point> FindMatchedSequence() {
 				if (pre == cur) {
 					Ft = 1;
 				}
+				/*
 				else if (network->tTosMin == DBL_MAX) {
 					Ft = 0;
 				}
+				*/
 				else {
 					vector <double> speed = network->getSpeed();
-					double vMean = 0;//Æ½¾ùËÙ¶È
+					double vMean = 0;//å¹³å‡é€Ÿåº¦
 					double numerator = 0;
 					double vv1 = 0, vv2 = 0;
 
@@ -238,7 +240,7 @@ vector <Point> FindMatchedSequence() {
 	return res;
 }
 
-//ST¡ªMatchingËã·¨
+//STâ€”Matchingç®—æ³•
 
 mutex lock_it;
 int it;
@@ -303,9 +305,9 @@ vector <Point> dealFlyPoint(vector <Point> Ori) {
 	return res;
 }
 
-//°ÑÆ¥ÅäÑ¡ÖĞµÄµã£¬Â·¾¶Ğ´ÈëÊı¾İ¿â
+//æŠŠåŒ¹é…é€‰ä¸­çš„ç‚¹ï¼Œè·¯å¾„å†™å…¥æ•°æ®åº“
 void writeToDB(const vector <Point>& Traj) {
-	//Ğ´ÈëÑ¡ÖĞµÄºòÑ¡µã
+	//å†™å…¥é€‰ä¸­çš„å€™é€‰ç‚¹
 	string SQL = "select * from pg_class where relname = 'trajectory_point'";
 	PGresult* res = DB->execQuery(SQL);
 	int num = PQntuples(res);
@@ -327,7 +329,7 @@ void writeToDB(const vector <Point>& Traj) {
 		DB->execUpdate(SQL);
 	}
 
-	//Ğ´ÈëÆ¥Åä¹ì¼£µÄÕÛÏß
+	//å†™å…¥åŒ¹é…è½¨è¿¹çš„æŠ˜çº¿
 	SQL = "select * from pg_class where relname = 'trajectory_polyline'";
 	res = DB->execQuery(SQL);
 	num = PQntuples(res);
@@ -348,7 +350,7 @@ void writeToDB(const vector <Point>& Traj) {
 		DB->execUpdate(SQL);
 	}
 
-	//Ğ´ÈëÆ¥ÅäµÄ¹ì¼£
+	//å†™å…¥åŒ¹é…çš„è½¨è¿¹
 	SQL = "select * from pg_class where relname = 'trajectory_line'";
 	res = DB->execQuery(SQL);
 	num = PQntuples(res);
@@ -376,7 +378,7 @@ void writeToDB(const vector <Point>& Traj) {
 		//	sprintf_s(buffer+cnt,BUFFSIZE-cnt,",%lf %lf",Traj[i].x,Traj[i].y);
 		//}
 		//else
-		{
+		//{
 			vector <int> path = network->getPath(Traj[i - 1], Traj[i]);
 
 			if (!path.empty()) {
@@ -400,9 +402,8 @@ void writeToDB(const vector <Point>& Traj) {
 			SQL = buffer;
 			DB->execUpdate(buffer);
 			memset(buffer, 0, sizeof(buffer));
-			sprintf_s(buffer, "insert into trajectory_line values(%d,ST_GeomFromText('LineString(%.6f %.6f"
-				, ID++, Traj[i].x, Traj[i].y);
-		}
+			sprintf_s(buffer, "insert into trajectory_line values(%d,ST_GeomFromText('LineString(%.6f %.6f", ID++, Traj[i].x, Traj[i].y);
+		//}
 	}
 	//cout<<cnt<<endl;
 	//cnt = strlen(buffer);
@@ -411,8 +412,8 @@ void writeToDB(const vector <Point>& Traj) {
 	//DB.execUpdate(SQL);
 }
 
-//´¦ÀíÔ­Ê¼Êı¾İ£¬°ÑLineStringÖĞº¬ÓĞ¶àÓÚÁ½¸öµãµÄ²¿·Ö²ğ·Öºó´æÈëÊı¾İ¿â
-//Ö»ĞèÒªÔËĞĞÒ»´Î
+//å¤„ç†åŸå§‹æ•°æ®ï¼ŒæŠŠLineStringä¸­å«æœ‰å¤šäºä¸¤ä¸ªç‚¹çš„éƒ¨åˆ†æ‹†åˆ†åå­˜å…¥æ•°æ®åº“
+//åªéœ€è¦è¿è¡Œä¸€æ¬¡
 
 int Insert(string SQL, int id) {
 	PGresult* res = DB->execQuery(SQL);
@@ -568,20 +569,20 @@ bool readConfig() {
 	if (cnt == 9)
 		return true;
 	else {
-		cerr << "config.ini corrupted£¡" << endl;
+		cerr << "config.ini corruptedï¼" << endl;
 		return false;
 	}
 }
 
 int main(int argc, char* argv[]) {
-	// ¶ÁÈ¡config£¬»ñÈ¡Êı¾İ¿â¼°Ò»Ğ©²ÎÊıĞÅÏ¢
+	// è¯»å–configï¼Œè·å–æ•°æ®åº“åŠä¸€äº›å‚æ•°ä¿¡æ¯
 	if (!readConfig()) {
 		cerr << "read config.ini error!" << endl;
 		return 0;
 	}
-	// ´´½¨Êı¾İ¿âÊµÌå
+	// åˆ›å»ºæ•°æ®åº“å®ä½“
 	DB = new Database(dbname, dbport, dbaddr);
-	// ½¨Á¢Â·ÍøÊµÌå
+	// å»ºç«‹è·¯ç½‘å®ä½“ï¼Œå¯¹åº”Road network ğº
 	network = new Graph(roadTN);
 
 	string basePath;
@@ -589,6 +590,7 @@ int main(int argc, char* argv[]) {
 	while (cin >> basePath) {
 		cerr << "start init..." << endl;
 		tm = clock();
+		// è¯»å–æ–‡ä»¶ä¸­çš„gpsæ•°æ®å­˜åˆ°å˜é‡Pä¸­ï¼Œå¯¹åº”a trajectory ğ‘‡: ğ‘1 â†’ ğ‘2 â†’ â‹¯ â†’ ğ‘ğ‘›
 		if (init(basePath) == false) {
 			cerr << "can not open file " << basePath << endl;
 			cerr << "please input file path:";
@@ -598,6 +600,7 @@ int main(int argc, char* argv[]) {
 
 		cerr << "start loadInitPoint..." << endl;
 		tm = clock();
+		// æŠŠå˜é‡Pçš„å†…å®¹å†™å…¥æ•°æ®åº“
 		loadInitPoint();
 		cerr << "loadInitPoint cost " << clock() - tm << "ms" << endl;
 
