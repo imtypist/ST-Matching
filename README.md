@@ -1,5 +1,13 @@
 # ST-Matching
 
+### 弃坑
+
+![](./sorry.gif)
+
+哈哈哈sorry，弃坑了，在OSM导入到PostgreSQL这一步应该是有问题的，导入的table缺少一些字段，我不晓得原作者的导入方法是什么，以后有兴趣再研究哈哈哈！大家有兴趣的也可以尝试下~
+
+----
+
 ST-Matching is proposed in *Map-matching for low-sampling-rate GPS trajectories*, which is a map matching algorithm usually used for handling low sampling rate GPS trajectories. This paper is also avaliable in my repository, you can download it.
 
 Then, I will introduce the flow of ST-Matching and how to run this program.
